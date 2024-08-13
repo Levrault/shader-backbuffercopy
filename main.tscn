@@ -1,0 +1,123 @@
+[gd_scene load_steps=20 format=3 uid="uid://eqv30er1dydc"]
+
+[ext_resource type="Shader" path="res://m_fog.gdshader" id="1_ph27g"]
+[ext_resource type="Shader" path="res://m_water.gdshader" id="2_tsx8a"]
+[ext_resource type="Texture2D" uid="uid://bdesyp5apk3so" path="res://addons/godot-prototype-texture/PNG/checker_black_512x512.png" id="3_d1nya"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7putg"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_7aggq"]
+sky_material = SubResource("ProceduralSkyMaterial_7putg")
+
+[sub_resource type="Environment" id="Environment_s8duo"]
+background_mode = 2
+sky = SubResource("Sky_7aggq")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_2u05n"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_mek2m"]
+data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7bafc"]
+albedo_texture = ExtResource("3_d1nya")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yxcks"]
+render_priority = 0
+shader = ExtResource("1_ph27g")
+shader_parameter/fog_color = Color(0.729412, 0.729412, 0.729412, 1)
+shader_parameter/fog_distance = 50.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_y56w7"]
+material = SubResource("ShaderMaterial_yxcks")
+flip_faces = true
+size = Vector2(2, 2)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_t3qiy"]
+noise_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_x862k"]
+seamless = true
+normalize = false
+noise = SubResource("FastNoiseLite_t3qiy")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dadbr"]
+noise_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0wy0v"]
+seamless = true
+normalize = false
+noise = SubResource("FastNoiseLite_dadbr")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_vrxax"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_3nh1l"]
+seamless = true
+noise = SubResource("FastNoiseLite_vrxax")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j2um1"]
+render_priority = 0
+shader = ExtResource("2_tsx8a")
+shader_parameter/surface_color = Color(0, 0.378625, 0.71875, 1)
+shader_parameter/fresnel_color = Color(0.71875, 0.159227, 0.274512, 1)
+shader_parameter/surface_noise_01 = SubResource("NoiseTexture2D_x862k")
+shader_parameter/surface_noise_02 = SubResource("NoiseTexture2D_0wy0v")
+shader_parameter/wave_direction_01 = Vector2(1, 1)
+shader_parameter/wave_direction_02 = Vector2(-1, -1)
+shader_parameter/time_scale = 0.025
+shader_parameter/wave_noise_scale = 10.0
+shader_parameter/wave_height_scale = 0.15
+shader_parameter/wave_noise = SubResource("NoiseTexture2D_3nh1l")
+shader_parameter/edge_color = Color(1, 1, 1, 1)
+shader_parameter/proximity_fade_distance = 0.2
+shader_parameter/edge_intensity = 8.0
+shader_parameter/edge_count = 4.0
+shader_parameter/depth_fade_distance = 1.0
+shader_parameter/absorbance = 2.0
+shader_parameter/shallow_color_intensity = 0.3
+shader_parameter/deep_color_intensity = 1.033
+
+[sub_resource type="QuadMesh" id="QuadMesh_vbqik"]
+material = SubResource("ShaderMaterial_j2um1")
+size = Vector2(20, 20)
+subdivide_width = 40
+subdivide_depth = 40
+orientation = 1
+
+[node name="Main" type="Node3D"]
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_s8duo")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_2u05n")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_mek2m")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.53367, 0)
+size = Vector3(100, 1, 100)
+material = SubResource("StandardMaterial3D_7bafc")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965423, 0.26069, 0, -0.26069, 0.965423, 0, 1.56086, 7.63348)
+current = true
+
+[node name="FogDepth" type="MeshInstance3D" parent="Camera3D"]
+mesh = SubResource("QuadMesh_y56w7")
+
+[node name="Water" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_vbqik")
